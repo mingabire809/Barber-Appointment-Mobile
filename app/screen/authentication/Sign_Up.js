@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import {Pressable,StatusBar, Image, ImageBackground, SafeAreaView, StyleSheet, Text, TextInput, View, ScrollView, TouchableOpacity } from 'react-native';
 import {useDimensions, useDeviceOrientation} from '@react-native-community/hooks';
+import PasswordStrengthBar from 'react-password-strength-bar';
 
 function Sign_Up(props) {
 const [passwordVisibility, setPasswordVisibility] = useState(true);
@@ -35,6 +36,13 @@ const [passwordVisibility, setPasswordVisibility] = useState(true);
           setImage(result.uri);
         }
       };
+
+      const [fullName, setFullName] = useState('');
+      const [email, setEmail] = useState('');
+      const [username, setUsername] = useState('');
+      const [phoneNumber, setPhoneNumber] = useState('');
+      const [password, setPassword] = useState('');
+      const [confirmed_Password, setConfirmed_Password] = useState('');
     
     return (
         
@@ -55,21 +63,28 @@ const [passwordVisibility, setPasswordVisibility] = useState(true);
                 <TextInput 
                 style={styles.input}
                 placeholder='Full Name*'
+                onChangeText={newText => setFullName(newText)}
+                defaultValue={fullName}
                 />
                 <TextInput 
                 style={styles.input}
                 placeholder='Email*'
                 keyboardType="email-address"
+                onChangeText={newText => setEmail(newText)}
+                defaultValue={email}
                 />
                 <TextInput 
                 style={styles.input}
                 placeholder='Username*'
-                
+                onChangeText={newText => setUsername(newText)}
+                defaultValue={username}
                 />
                 <TextInput 
                 style={styles.input}
                 placeholder='Phone Number*'
                 keyboardType="phone-pad"
+                onChangeText={newText => setPhoneNumber(newText)}
+                defaultValue={phoneNumber}
                 />
                 <TouchableOpacity 
                 style={styles.profile_uploader}
@@ -82,13 +97,22 @@ const [passwordVisibility, setPasswordVisibility] = useState(true);
                 style={styles.input}
                 placeholder='Password*'
                 secureTextEntry={passwordVisibility}
+                onChangeText={newText => setPassword(newText)}
+                defaultValue={password}
                 
                 />
+                {password.length > 0 && password.length <= 5 &&  <Text style={{color:'red'}}>Weak password</Text>}
+                {password.length > 5 && password.length < 10  && <Text style={{color:'yellow'}}>Medium password</Text>}
+                {password.length >= 10 && <Text style={{color:'green'}}>Strong password</Text>}
+                
                 <TextInput 
                 style={styles.input}
                 placeholder='Confirm Password*'
                 secureTextEntry={passwordVisibility}
+                onChangeText={newText => setConfirmed_Password(newText)}
+                defaultValue={confirmed_Password}
                 />
+                {password!==confirmed_Password && <Text style={{color:'red'}}>Passwords do not match!!!</Text>}
                 <TouchableOpacity 
                 style={styles.paswordtoggle}
                 onPress={handlePasswordVisibility}
@@ -219,7 +243,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingBottom: 80,
-        paddingTop:1,
+        paddingTop:20,
         width: '100%',
         height: '100%',
       },
