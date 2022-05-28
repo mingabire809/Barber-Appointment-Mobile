@@ -1,10 +1,17 @@
 import React, { useRef, useState }  from 'react';
 import { Appbar, Colors } from 'react-native-paper';
-import Drawer from 'react-native-drawer';
+import { createStackNavigator } from '@react-navigation/stack';
+import 'react-native-gesture-handler';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { NavigationContainer } from '@react-navigation/native';
 import {Pressable,StatusBar, DrawerLayoutAndroid,Image, ImageBackground, SafeAreaView, StyleSheet, Text, TextInput, View, ScrollView, TouchableOpacity } from 'react-native';
 import {useDimensions, useDeviceOrientation} from '@react-native-community/hooks';
+import Booking from './Booking';
 
-function WelcomePage(props) {
+
+function WelcomePage({navigation}) {
+    const Drawer = createDrawerNavigator();
+    const Stack = createStackNavigator();
     return (
         <ImageBackground
         style={styles.background}
@@ -12,13 +19,32 @@ function WelcomePage(props) {
         source={require('../../assets/resized.jpg')}
         >
             <View style={styles.container}>
+                {/*
                 <Appbar style={styles.appbar}>
                         <Appbar.Action icon='menu'/>
-                        <Text>Barber Shop</Text>
-                        <View></View>
+                        <Appbar.Content title='Barber shop' style={styles.text}/>
+                       
                         </Appbar>
+                */ }
+                        {/*<NavigationContainer style={styles.appbar}>
+                        <Drawer.Navigator useLegacyImplementation>
+                        <Drawer.Screen name='Screen' component={Services}/>
+                        <Drawer.Screen name='Screens' component={Services}/>
+                    </Drawer.Navigator>
+                        </NavigationContainer> */}
+
+                        <Image 
+                        source={require('../../assets/logo2.png')}
+                        style={styles.img}
+                        />
+
+                <TouchableOpacity 
+                onPress={() => navigation.navigate('Booking')}
+                style={styles.button}>
+                    <Text style={styles.text}>Book Appointment!</Text>
+                </TouchableOpacity>
                     
-                <Drawer></Drawer>
+                
                 </View>
             
 
@@ -51,6 +77,34 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         
+        
+    },
+    text:{
+        padding: 10,
+        fontWeight:'800',
+        fontStyle:'italic',
+        fontSize:15,
+        fontFamily: 'Roboto',
+        
+    },
+    button:{
+        height: 50, 
+        backgroundColor:'darkorange',
+        alignSelf:'center',
+        textAlign: 'center',
+        justifyContent:'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        marginTop: 250,
+        
+        
+    },
+    img:{
+        borderRadius: 100,
+        width:150,
+        height: 150,
+        marginTop: 170,
+        alignSelf: 'center',
         
     },
 
