@@ -24,7 +24,7 @@ const [visible, setVisible] = useState(false);
                            >   
                                <Menu.Item title='Home' onPress={()=> console.log('Home')}/>
                                <Menu.Item title='Profile' onPress={()=> console.log('Profile')}/>
-                               <Menu.Item title='Services' onPress={()=> console.log('Services')}/>
+                               <Menu.Item title='Services' onPress={()=>navigation.navigate('Services')}/>
                                <Menu.Item title='Prices' onPress={()=> console.log('Prices')}/>
                                <Menu.Item title='Membership' onPress={()=> console.log('Membership')}/>
                                <Menu.Item title='Logout' onPress={()=> console.log('Logout')}/>

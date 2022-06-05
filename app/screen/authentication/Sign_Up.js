@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import {Pressable,StatusBar, Image, ImageBackground, SafeAreaView, StyleSheet, Text, TextInput, View, ScrollView, TouchableOpacity } from 'react-native';
 import {useDimensions, useDeviceOrientation} from '@react-native-community/hooks';
 import PasswordStrengthBar from 'react-password-strength-bar';
+import { Context } from '../../components/globalContext/globalContext';
 
-function Sign_Up(props) {
+function Sign_Up({navigation, route, props}) {
+    const globalContext = useContext(Context)
+    const {isLoggedIn, setIsLoggedIn, domain, token, setToken, getToken}= globalContext
 const [passwordVisibility, setPasswordVisibility] = useState(true);
   const [rightIcon, setRightIcon] = useState('eye');
   const handlePasswordVisibility = () => {
@@ -43,6 +46,46 @@ const [passwordVisibility, setPasswordVisibility] = useState(true);
       const [phoneNumber, setPhoneNumber] = useState('');
       const [password, setPassword] = useState('');
       const [confirmed_Password, setConfirmed_Password] = useState('');
+      const [error, setError] = useState('')
+
+      const handleSignUp = async () =>{
+        setError("")
+          let body = JSON.stringify({
+              'email': email,
+              'full_name': fullName,
+              'profile_picture': image,
+              'username': username,
+              'phone_number': phoneNumber,
+              'password': password
+          })
+  
+        await fetch(`${domain}/member/signup/`,{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                
+            },
+            body: body
+        })
+        .then(res => {
+            if (res.ok){
+                 return res.json()
+            } else {
+                setError("User already exist")
+                throw res.json()
+            }
+        })
+        .then(json => {
+            
+            setToken(json)
+            setIsLoggedIn(true)
+            getToken(json.token)
+            console.log(json)
+        })
+        .catch(error => {
+            console.log(error)
+        })
+    }
     
     return (
         
@@ -122,7 +165,7 @@ const [passwordVisibility, setPasswordVisibility] = useState(true);
                 
     
                 <TouchableOpacity style={styles.button}>
-                    <Text style={styles.text}>REGISTER</Text>
+                    <Text style={styles.text} onPress={() => handleSignUp()}>REGISTER</Text>
                 </TouchableOpacity>
                 
                     </View>

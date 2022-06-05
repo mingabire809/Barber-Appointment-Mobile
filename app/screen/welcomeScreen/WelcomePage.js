@@ -7,11 +7,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import {Pressable,StatusBar, DrawerLayoutAndroid,Image, ImageBackground, SafeAreaView, StyleSheet, Text, TextInput, View, ScrollView, TouchableOpacity } from 'react-native';
 import {useDimensions, useDeviceOrientation} from '@react-native-community/hooks';
 import Booking from './Booking';
+import { Context } from '../../components/globalContext/globalContext';
 
 
-function WelcomePage({navigation}) {
+function WelcomePage({navigation, route}) {
     const Drawer = createDrawerNavigator();
     const Stack = createStackNavigator();
+
+    const globalContext = useContext(Context)
+    const isLoggedIn = globalContext;
     return (
         <ImageBackground
         style={styles.background}

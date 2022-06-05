@@ -1,8 +1,16 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {TouchableOpacity ,Button,StatusBar, Image, ImageBackground, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 import {useDimensions, useDeviceOrientation} from '@react-native-community/hooks';
 
-function Login(props) {
+import { Context } from '../../components/globalContext/globalContext';
+import { BottomNavigation } from 'react-native-paper';
+import WelcomePage from '../welcomeScreen/WelcomePage';
+
+
+
+function Login({navigation, route, props}) {
+    const globalContext = useContext(Context)
+    const {isLoggedIn, setIsLoggedIn, domain, token, setToken, getToken}= globalContext
     const [passwordVisibility, setPasswordVisibility] = useState(true);
   const [rightIcon, setRightIcon] = useState('eye');
   const handlePasswordVisibility = () => {
@@ -14,6 +22,56 @@ function Login(props) {
       setPasswordVisibility(!passwordVisibility);
     }
   };
+  const [username, setUserName] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('')
+
+/*  function handleLogin(){
+    console.log(username)
+    console.log(password)
+    console.log('Logging In')
+    console.log(isLoggedIn)
+    setIsLoggedIn(true)
+    
+    navigation.navigate("WelcomePage")
+    
+  }*/
+
+  function handleLogin(){
+      setError("")
+        let body = JSON.stringify({
+            'username': username,
+            'password': password
+        })
+
+      fetch(`${domain}/login`,{
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: body
+      })
+      .then(res => {
+          if (res.ok){
+              return res.json()
+          } else {
+              setError("Wrong username or password")
+              throw res.json()
+          }
+      })
+      .then(json => {
+          console.log('LOGGED IN')
+          console.log(json)
+          setToken(json)
+          setIsLoggedIn(true)
+          getToken(json.token)
+      })
+      .catch(error => {
+          console.log(error)
+      })
+  }
+
+   
     return (
         <ImageBackground
         style={styles.background} 
@@ -28,26 +86,31 @@ function Login(props) {
                 <TextInput 
                 style={styles.input}
                 placeholder='Username'
+                onChangeText={newText => setUserName(newText)}
+                defaultValue={username}
                 />
                 <TextInput
                 
                 style={styles.input}
                 placeholder='Password'
                 secureTextEntry={passwordVisibility}
+                onChangeText={newText => setPassword(newText)}
+                defaultValue={password}
                 />
+                {error.length > 0 && <Text style={{color:'red'}}>{error}</Text>}
                 <TouchableOpacity 
                 style={styles.paswordtoggle}
                 onPress={handlePasswordVisibility}
                 >
                     <Text style={styles.text3}>{passwordVisibility ? 'Show Password' : 'Hide Password'}</Text>
                 </TouchableOpacity>
-                 <TouchableOpacity style={styles.button}>
+                 <TouchableOpacity style={styles.button} onPress={() => handleLogin()}>
                     <Text style={styles.text2}>LOGIN</Text>
                 </TouchableOpacity>
                 
                 <Text style={styles.text}>Or</Text>
                 <TouchableOpacity style={styles.button}>
-                    <Text style={styles.text2}>REGISTER</Text>
+                    <Text style={styles.text2} onPress={() => navigation.navigate('Sign_Up')}>REGISTER</Text>
                 </TouchableOpacity>
                
             </View>
