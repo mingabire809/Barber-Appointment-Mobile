@@ -1,7 +1,7 @@
 import React, {useContext, useState} from 'react';
 import {TouchableOpacity ,Button,StatusBar, Image, ImageBackground, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 import {useDimensions, useDeviceOrientation} from '@react-native-community/hooks';
-
+import * as SecureStore from 'expo-secure-store'
 import { Context } from '../../components/globalContext/globalContext';
 import { BottomNavigation } from 'react-native-paper';
 import WelcomePage from '../welcomeScreen/WelcomePage';
@@ -37,7 +37,7 @@ function Login({navigation, route, props}) {
     
   }*/
 
-  function handleLogin(){
+  async function handleLogin(){
       setError("")
         let body = JSON.stringify({
             'username': username,
@@ -62,13 +62,35 @@ function Login({navigation, route, props}) {
       .then(json => {
           console.log('LOGGED IN')
           console.log(json)
-          setToken(json)
+          //setToken(json)
           setIsLoggedIn(true)
           getToken(json.token)
-      })
+      }).then(
+        fetch(`${domain}/member/username/`,{
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `token ${ await SecureStore.getItemAsync('token')}`
+            },
+        }).then(res => {
+            if (res.ok){
+                return res.json()
+            } else {
+                throw res.json()
+            }
+            
+        }).then(json => {
+            console.log(json)
+            navigation.navigate("WelcomePage")
+        }).catch(error => {
+            console.log(error)
+        }) 
+      )
       .catch(error => {
           console.log(error)
       })
+
   }
 
    

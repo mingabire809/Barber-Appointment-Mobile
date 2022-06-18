@@ -1,18 +1,24 @@
-import React, {useState} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {Pressable,StatusBar, Button, DrawerLayoutAndroid,Image, ImageBackground, SafeAreaView, StyleSheet, Text, TextInput, View, ScrollView, TouchableOpacity } from 'react-native';
 import {useDimensions, useDeviceOrientation} from '@react-native-community/hooks';
 import { RadioButton } from 'react-native-paper';
 import AppBar from './AppBar';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { Context } from '../../components/globalContext/globalContext';
+import * as SecureStore from 'expo-secure-store'
 
 
 
 function Booking({navigation}) {
+    const globalContext = useContext(Context)
+    const {isLoggedIn, setIsLoggedIn, domain, token, setToken, getToken}= globalContext
     const [hairCut, setHairCut] = useState('None');
     const [extraService, setExtraService] = useState('None');
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [immediatePayment, setImmediatePayment] = useState('No');
     const [datePicked, setDatePicked] = useState();
+    const [haircuts, setHaircuts] = useState('');
+    const [services, setServices] = useState('');
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -27,6 +33,63 @@ function Booking({navigation}) {
     setDatePicked(date);
     hideDatePicker();
   };
+
+  const fetchHair = async () => {
+    fetch(`${domain}/services/haircut/`,{
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `token ${await SecureStore.getItemAsync('token')}`
+        },
+    }).then(res => {
+        if (res.ok){
+            return res.json()
+        } else {
+            throw res.json()
+        }
+        
+    }).then(json => {
+        console.log(json)
+        setHaircuts(json)
+        
+    }).catch(error => {
+        console.log(error)
+    }) 
+  }
+
+  const fetchServices = async () => {
+    fetch(`${domain}/services/extra_services/`,{
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `token ${await SecureStore.getItemAsync('token')}`
+        },
+    }).then(res => {
+        if (res.ok){
+            return res.json()
+        } else {
+            throw res.json()
+        }
+        
+    }).then(json => {
+        console.log(json)
+        setServices(json)
+        
+    }).catch(error => {
+        console.log(error)
+    }) 
+  }
+  
+  useEffect(() => {
+    fetchHair();
+}, []);
+useEffect(() => {
+fetchServices();
+}, []);
+  
+
     
 
 
@@ -35,9 +98,25 @@ function Booking({navigation}) {
         style={styles.background}
         source={require('../../assets/resized.jpg')}>
             <View style={styles.container}>
-                <Text style={styles.text2}>Select your hair cut</Text>
                 
-                <View style={styles.radioOption}>
+                <Text style={styles.text2}>Select your hair cut</Text>
+                {haircuts.length > 0 ?(
+                    <View style={styles.radioOption}>
+                        {haircuts.map(haircut=>(
+                        <>
+                        <Text style={styles.text}>{haircut.hair_cut_type}</Text>
+                <RadioButton value="Undercut"
+                color='white'
+                status={hairCut === haircut.hair_cut_type ? 'checked': 'unchecked'}
+                onPress={() => setHairCut(haircut.hair_cut_type )}
+                
+                />
+                        </>
+                    ))}
+                    </View>
+                    
+                ): null}
+                {/*<View style={styles.radioOption}>
                     
                 <Text style={styles.text}>Undercut</Text>
                 <RadioButton value="Undercut"
@@ -57,10 +136,26 @@ function Booking({navigation}) {
                 onPress={() => setHairCut('Buzz cut')}
                 />
                 
-                </View>
+                </View> */}
                 <Text style={styles.text2}>Select extra services</Text>
+                {services.length > 0 ?(
+                    <View style={styles.radioOption}>
+                        {services.map(service=>(
+                        <>
+                        <Text style={styles.text}>{service.type_of_service}</Text>
+                <RadioButton value="Undercut"
+                color='white'
+                status={extraService === service.type_of_service ? 'checked': 'unchecked'}
+                onPress={() => setHairCut(service.type_of_service)}
+                
+                />
+                        </>
+                    ))}
+                    </View>
+                    
+                ): null}
 
-                <View style={styles.radioOption}>
+                {/*<View style={styles.radioOption}>
                     
                 <Text style={styles.text}>Face Washing</Text>
                 <RadioButton value="Face Washing"
@@ -80,7 +175,7 @@ function Booking({navigation}) {
                 onPress={() => setExtraService('Ear Washing')}
                 />
                 
-                </View>
+                </View>*/}
 
                 
                 <TouchableOpacity 

@@ -14,7 +14,9 @@ import Prices from './app/screen/services/Prices';
 import Services from './app/screen/services/Services';
 import Landing from './app/screen/landing/Landing';
 import { Context, Provider } from './app/components/globalContext/globalContext';
+import Navigator from './app/components/navigation/navigator';
 const Stack = createStackNavigator();
+
 
 export default function App() {
   const globalContext = useContext(Context)
@@ -22,33 +24,11 @@ export default function App() {
   const token = globalContext;
   return (
     <Provider>
+      <View style={{flex:1}}>
     <NavigationContainer>
-    <Stack.Navigator
-    initialRouteName="Landing"
-    screenOptions={{
-      header: (props) => <AppBar {...props}/>,
-    }}
-    >
-      {(!isLoggedIn || !token) ? 
-      <>
-      <Stack.Screen name="Landing" component={Landing} options={{headerShown: false}}/>
-      <Stack.Screen name="Login" component={Login} options={{headerShown: false}}/>
-      <Stack.Screen name="Sign_Up" component={Sign_Up} options={{headerShown: false}}/>
-      </>
-      :
-      
-      
-     
-     <> 
-      <Stack.Screen name="WelcomePage" component={WelcomePage} />
-      <Stack.Screen name="Booking" component={Booking} />
-      <Stack.Screen name='Payment' component={Payment} />
-      <Stack.Screen name='Prices' component={Prices} />
-      <Stack.Screen name='Services' component={Services} />
-      </>
-}
-    </Stack.Navigator>
+      <Navigator/>
   </NavigationContainer>
+  </View>
   </Provider>
    
   );

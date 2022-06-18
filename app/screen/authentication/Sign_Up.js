@@ -3,6 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import {Pressable,StatusBar, Image, ImageBackground, SafeAreaView, StyleSheet, Text, TextInput, View, ScrollView, TouchableOpacity } from 'react-native';
 import {useDimensions, useDeviceOrientation} from '@react-native-community/hooks';
 import PasswordStrengthBar from 'react-password-strength-bar';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker'
 import { Context } from '../../components/globalContext/globalContext';
 
 function Sign_Up({navigation, route, props}) {
@@ -22,7 +23,7 @@ const [passwordVisibility, setPasswordVisibility] = useState(true);
 
   
   
-
+    const [type, setType] = useState(null);
     const [image, setImage] = useState(null);
     const pickImage = async () => {
         // No permissions request is necessary for launching the image library
@@ -36,10 +37,12 @@ const [passwordVisibility, setPasswordVisibility] = useState(true);
         console.log(result);
     
         if (!result.cancelled) {
+          setType(result.type);
           setImage(result.uri);
         }
       };
 
+      
       const [fullName, setFullName] = useState('');
       const [email, setEmail] = useState('');
       const [username, setUsername] = useState('');
@@ -53,16 +56,20 @@ const [passwordVisibility, setPasswordVisibility] = useState(true);
           let body = JSON.stringify({
               'email': email,
               'full_name': fullName,
-              'profile_picture': image,
+           //   'profile_picture': image,
               'username': username,
               'phone_number': phoneNumber,
               'password': password
           })
   
         await fetch(`${domain}/member/signup/`,{
+            credentials: 'include',
             method: 'POST',
+            redirect: 'follow',
             headers: {
+                'Accept': 'application/json',
                 'Content-Type': 'application/json',
+                
                 
             },
             body: body
@@ -86,6 +93,31 @@ const [passwordVisibility, setPasswordVisibility] = useState(true);
             console.log(error)
         })
     }
+
+  /*  const handleSignUp = async () =>{
+        var formdata = new FormData();
+    formdata.append("email", email);
+    formdata.append("full_name", fullName);
+    formdata.append("profile_picture", {uri: image, type: type, name: image});
+    formdata.append("username", username);
+    formdata.append("phone_number", phoneNumber);
+    formdata.append("password", password);
+
+    var requestOptions = {
+    method: 'POST',
+    headers:{
+        'Accept': 'application/json',
+        "Content-Type": "multipart/form-data",
+    },
+    body: formdata,
+    redirect: 'follow'
+    };
+
+    fetch("https://mingabire809.pythonanywhere.com/member/signup/", requestOptions)
+    .then(response => response.text())
+    .then(result => console.log(result))
+    .catch(error => console.log('error:', error));
+        }*/
     
     return (
         
@@ -129,13 +161,15 @@ const [passwordVisibility, setPasswordVisibility] = useState(true);
                 onChangeText={newText => setPhoneNumber(newText)}
                 defaultValue={phoneNumber}
                 />
-                <TouchableOpacity 
+                {/*
+                 <TouchableOpacity 
                 style={styles.profile_uploader}
                 onPress={pickImage}
                 >
                     <Text style={styles.text}>Upload Profile Picture</Text>
                 </TouchableOpacity>
                 {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+                */}
                 <TextInput 
                 style={styles.input}
                 placeholder='Password*'
